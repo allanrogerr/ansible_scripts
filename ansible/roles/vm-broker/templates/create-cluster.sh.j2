@@ -36,6 +36,6 @@ echo "Running minio" >> /tmp/minio.log
 MINIO_IS_LXC=1 MINIO_CI_CD=1 MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9000" \
 ./minio server \
 {{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{1...2} \
---address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs > /tmp/minio.log &
+--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
 
 echo "Done" >> /tmp/minio.log
