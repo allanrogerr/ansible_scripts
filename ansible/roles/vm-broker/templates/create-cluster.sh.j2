@@ -26,4 +26,4 @@ CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio
 MINIO_IS_LXC=1 MINIO_CI_CD=1 \
 ./minio server \
 {{ schema }}://{{ host_prefix }}{0...{{ host_count }}}.{{ host_domain }}:9000/tmp/data{1...2} \
---address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs
+--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs &

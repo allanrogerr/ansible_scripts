@@ -63,7 +63,7 @@ webservers:
     vars:
         # General User variables
         user: ubuntu
-        host_list: cluster0.lab.min.dev,cluster1.lab.min.dev,cluster2.lab.min.dev,cluster3.lab.min.dev,cluster4.lab.min.dev,cluster5.lab.min.dev,cluster6.lab.min.dev,cluster7.lab.min.dev,
+        host_list: cluster0.lab.min.dev,cluster1.lab.min.dev,cluster2.lab.min.dev,cluster3.lab.min.dev,cluster4.lab.min.dev,cluster5.lab.min.dev,cluster6.lab.min.dev,cluster7.lab.min.dev
         minio_repo: https://github.com/allanrogerr/minio.git
         minio_branch: cluster-lxc-containers
         host_prefix: cluster
