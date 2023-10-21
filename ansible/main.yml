@@ -1,0 +1,7 @@
+- hosts: servers
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: pre-hook
+    - role: vm-broker
+    - role: post-hook

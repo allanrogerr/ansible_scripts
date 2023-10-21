@@ -1,0 +1,4 @@
+- name: Enable linger (shell)
+  shell: loginctl enable-linger {{ user }}
+  become_user: "{{ user }}"
+  tags: pre-hook
