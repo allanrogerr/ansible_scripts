@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo kill "$(ps aux | grep "minio" | awk '{print $2}')"
+sudo kill "$(ps aux | grep -v grep | grep "minio" | awk '{print $2}')"
 
 wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
 chmod +x certgen-linux-amd64
