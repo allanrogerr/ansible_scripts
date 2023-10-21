@@ -10,7 +10,7 @@ cp public.crt $HOME/.minio/certs
 cp private.key $HOME/.minio/certs
 
 # Add entry to hosts
-sudo tee /etc/hosts << EOF
+sudo tee -a /etc/hosts << EOF
 127.0.0.1 HOSTNAME
 EOF
 
