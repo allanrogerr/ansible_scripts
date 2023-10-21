@@ -1,10 +1,15 @@
 ---
-- name: Remove existing files
-  command: rm -rf * .*
-  args:
-    chdir: /home/{{ user }}
-  tags: vm-broker
-  ignore_errors: yes
+- name: Find existing files
+  find:
+    paths: /home/{{ user }}
+    patterns: "*"
+  register: files_to_delete
+
+- name: Remove files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"
 
 - name: Copy script
   template:
