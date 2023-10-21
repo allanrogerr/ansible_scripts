@@ -4,4 +4,4 @@
   roles:
     - role: pre-hook
     - role: vm-broker
-    - role: post-hook
+    #- role: post-hook
