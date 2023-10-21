@@ -1,15 +1,8 @@
 ---
 - name: Find existing files
-  find:
-    paths: /home/{{ user }}
-    patterns: "*"
-  register: files_to_delete
-
-- name: Remove files
-  file:
-    path: "{{ item.path }}"
-    state: absent
-  with_items: "{{ files_to_delete.files }}"
+  become: true
+  shell: rm -rf *
+  tags: vm-broker
 
 - name: Copy script
   template:
