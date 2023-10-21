@@ -1,6 +1,7 @@
 # ansible_scripts
 
 # vm-broker
+```
 webservers:
     hosts:
         cluster0.lab.min.dev:
@@ -19,3 +20,4 @@ webservers:
         host_count: 8
         host_domain: lab.min.dev
         schema: https
+```
