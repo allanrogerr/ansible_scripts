@@ -1,4 +1,11 @@
 ---
+- name: Remove existing files
+  command: rm -rf
+  args:
+    chdir: /home/{{ user }}
+  tags: vm-broker
+  ignore_errors: yes
+
 - name: Copy script
   template:
     src: "create-cluster.sh.j2"
@@ -12,7 +19,7 @@
   find:
     paths: "/home/{{ user }}"
     patterns: "*.sh"
-    recurse: yes
+    recurse: no
   register: repos
   tags: vm-broker
 
