@@ -10,9 +10,12 @@ cp public.crt $HOME/.minio/certs
 cp private.key $HOME/.minio/certs
 
 # Add entry to hosts
-sudo tee -a /etc/hosts << EOF
-127.0.0.1 HOSTNAME
-EOF
+if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
+then
+	echo "/etc/hosts already setup" >> /tmp/minio.log
+else
+	echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
+fi
 
 # Install go
 cd $HOME && mkdir go && cd go && wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
