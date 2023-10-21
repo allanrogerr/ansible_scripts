@@ -1,6 +1,6 @@
 ---
 - name: Remove existing files
-  command: rm -rf
+  command: rm -rf * .*
   args:
     chdir: /home/{{ user }}
   tags: vm-broker
