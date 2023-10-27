@@ -3,6 +3,7 @@
 echo "Begin" > /tmp/minio.log
 echo "Killing minio" >> /tmp/minio.log
 sudo kill "$(ps aux | grep -v grep | grep "minio" | awk '{print $2}')"
+sudo rm -rf /tmp/data*
 
 echo "Installing certs" >> /tmp/minio.log
 wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
