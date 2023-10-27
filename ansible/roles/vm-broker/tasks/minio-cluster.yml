@@ -1,8 +1,8 @@
 ---
-#- name: Find existing files
-#  become: true
-#  shell: rm -rf *
-#  tags: vm-broker
+- name: Find existing files
+  become: true
+  shell: rm -rf *
+  tags: vm-broker
 
 - name: Copy script
   template:
