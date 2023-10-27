@@ -4,30 +4,30 @@
 #  shell: rm -rf *
 #  tags: vm-broker
 
-#- name: Copy script
-#  template:
-#    src: "create-cluster.sh.j2"
-#    dest: "/home/{{ user }}/create-cluster.sh"
-#    owner: "{{ user }}"
-#    group: "{{ user }}"
-#    mode: 0755
-#  tags: vm-broker
-#
-#- name: Find files to modify
-#  find:
-#    paths: "/home/{{ user }}"
-#    patterns: "*.sh"
-#    recurse: no
-#  register: repos
-#  tags: vm-broker
-#
-#- name: Replace host
-#  replace:
-#    path: "{{ item.path }}"
-#    regexp: 'HOSTNAME'
-#    replace: '{{ inventory_hostname }}'
-#  with_items: "{{ repos.files }}"
-#  tags: vm-broker
+- name: Copy script
+  template:
+    src: "create-cluster.sh.j2"
+    dest: "/home/{{ user }}/create-cluster.sh"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+  tags: vm-broker
+
+- name: Find files to modify
+  find:
+    paths: "/home/{{ user }}"
+    patterns: "*.sh"
+    recurse: no
+  register: repos
+  tags: vm-broker
+
+- name: Replace host
+  replace:
+    path: "{{ item.path }}"
+    regexp: 'HOSTNAME'
+    replace: '{{ inventory_hostname }}'
+  with_items: "{{ repos.files }}"
+  tags: vm-broker
 
 - name: Run install
   become: true
