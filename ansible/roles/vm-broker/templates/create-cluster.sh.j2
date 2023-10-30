@@ -28,11 +28,11 @@ cd $HOME && mkdir go && cd go && wget https://go.dev/dl/go1.21.3.linux-amd64.tar
 
 # Install modified minio
 echo "Installing minio" >> /tmp/minio.log
-sudo apt install git
-cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
-CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio
-#wget https://dl.min.io/server/minio/release/linux-amd64/minio
-#chmod +x minio
+#sudo apt install git
+#cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
+#CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio
+wget https://dl.min.io/server/minio/release/linux-amd64/minio
+chmod +x minio
 
 # Run minio
 echo "Running minio" >> /tmp/minio.log
@@ -40,15 +40,15 @@ echo "MINIO_CI_CD=1" >> /tmp/minio.log
 echo "MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9090\"" >> /tmp/minio.log
 echo "MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9000\"" >> /tmp/minio.log
 # Cluster
-_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000" \
-./minio server \
-{{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{1...2} \
---address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
+#_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000" \
+#./minio server \
+#{{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{1...2} \
+#--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
 
 # Single
-#_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9000" \
-#./minio server \
-#/tmp/data{1...2} \
-#--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
+_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9000" \
+./minio server \
+/tmp/data{1...2} \
+--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
 
 echo "Done" >> /tmp/minio.log
