@@ -29,6 +29,14 @@
   with_items: "{{ repos.files }}"
   tags: vm-broker
 
+- name: Replace host short
+  replace:
+    path: "{{ item.path }}"
+    regexp: 'HOSTSHORT'
+    replace: '{{ inventory_hostname_short }}'
+  with_items: "{{ repos.files }}"
+  tags: vm-broker
+
 - name: Run install
   become: true
   become_user: "{{ user }}"
