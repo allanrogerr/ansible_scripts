@@ -46,7 +46,7 @@ echo "MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9000
 #--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
 
 # Single
-_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000" \
+_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000" \
 ./minio server \
 /tmp/data{1...2} \
 --address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
