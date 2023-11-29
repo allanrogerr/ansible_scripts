@@ -5,13 +5,13 @@ echo "Killing minio" >> /tmp/minio.log
 sudo kill "$(ps aux | grep -v grep | grep "minio" | awk '{print $2}')"
 sudo rm -rf /tmp/data*
 
-echo "Installing certs" >> /tmp/minio.log
-wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
-chmod +x certgen-linux-amd64
-./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
-mkdir -p $HOME/.minio/certs/CAs
-cp public.crt $HOME/.minio/certs
-cp private.key $HOME/.minio/certs
+#echo "Installing certs" >> /tmp/minio.log
+#wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
+#chmod +x certgen-linux-amd64
+#./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
+#mkdir -p $HOME/.minio/certs/CAs
+#cp public.crt $HOME/.minio/certs
+#cp private.key $HOME/.minio/certs
 
 # Add entry to hosts
 if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
@@ -44,7 +44,7 @@ echo "MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}.{{ host_domain }}:1000
 _MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:10090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:10000" \
 ./minio server \
 {{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:10000/tmp/data{1...2} \
---address :10000 --console-address :10090 \
+--address :10000 --console-address :10090 >> /tmp/minio.log &
 #--certs-dir $HOME/.minio/certs
 >> /tmp/minio.log &
 
