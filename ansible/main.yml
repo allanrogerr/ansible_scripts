@@ -3,5 +3,5 @@
   become: yes
   roles:
     - role: pre-hook
-    - role: vm-broker
+    - role: minio-cluster
     #- role: post-hook
