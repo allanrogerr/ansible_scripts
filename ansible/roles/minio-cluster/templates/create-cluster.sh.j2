@@ -37,10 +37,10 @@ chmod +x minio
 
 # Run minio
 echo "Running minio" >> /tmp/minio.log
-echo "_MINIO_REVERSE_PROXY=1" >> /tmp/minio.log
-echo "MINIO_CI_CD=1" >> /tmp/minio.log
-echo "MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}.{{ host_domain }}:10090\"" >> /tmp/minio.log
-echo "MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}.{{ host_domain }}:10000\"" >> /tmp/minio.log
+echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:10090\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:10000\" \
+      ./minio server \
+      {{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:10000/tmp/data{1...2} \
+      --address :10000 --console-address :10090" >> /tmp/minio.log
 # Cluster
 _MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:10090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:10000" \
 ./minio server \
