@@ -12,37 +12,37 @@ mkdir -p /tmp/data
 sudo rm -rf ~/.minio/*
 
 # Reconfigure expansion candidates only
+echo "Installing certs" >> /tmp/minio.log
+wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
+chmod +x certgen-linux-amd64
+./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
+mkdir -p $HOME/.minio/certs/CAs
+cp public.crt $HOME/.minio/certs
+cp private.key $HOME/.minio/certs
+
+# Add entry to hosts
+if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
+then
+	echo "/etc/hosts already setup" >> /tmp/minio.log
+else
+	echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
+fi
+
+# Install go
+echo "Installing go" >> /tmp/minio.log
+cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log
+/usr/local/go/bin/go version >> /tmp/minio.log
+cd ~
+
+# Install modified minio
+echo "Installing previous minio" >> /tmp/minio.log
+sudo apt-get install git -y >> /tmp/minio.log
+cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
+CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
+cd ~
+
 if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]
 then
-	echo "Installing certs" >> /tmp/minio.log
-	wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
-	chmod +x certgen-linux-amd64
-	./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
-	mkdir -p $HOME/.minio/certs/CAs
-	cp public.crt $HOME/.minio/certs
-	cp private.key $HOME/.minio/certs
-
-	# Add entry to hosts
-	if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
-	then
-		echo "/etc/hosts already setup" >> /tmp/minio.log
-	else
-		echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
-	fi
-
-	# Install go
-	echo "Installing go" >> /tmp/minio.log
-	cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log
-	/usr/local/go/bin/go version >> /tmp/minio.log
-	cd ~
-
-	# Install modified minio
-	echo "Installing previous minio" >> /tmp/minio.log
-	sudo apt-get install git -y >> /tmp/minio.log
-	cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
-	CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
-	cd ~
-
 	# Run minio
 	echo "Running minio" >> /tmp/minio.log
 	echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9090\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9000\" \

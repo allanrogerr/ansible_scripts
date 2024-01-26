@@ -7,44 +7,6 @@ do
 	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
 	echo "Killed ${pid}" >> /tmp/minio.log
 done
-# Reconfigure expansion candidates only
-if [[ "HOSTSHORT" = "{{ expansion_prefix_1 }}"* || "HOSTSHORT" = "{{ expansion_prefix_2 }}"* ]]
-then
-	sudo rm -rf /tmp/data/*
-	mkdir -p /tmp/data
-	sudo rm -rf ~/.minio/*
-
-	echo "Installing certs" >> /tmp/minio.log
-	wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
-	chmod +x certgen-linux-amd64
-	./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
-	mkdir -p $HOME/.minio/certs/CAs
-	cp public.crt $HOME/.minio/certs
-	cp private.key $HOME/.minio/certs
-
-	# Add entry to hosts
-	if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
-	then
-		echo "/etc/hosts already setup" >> /tmp/minio.log
-	else
-		echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
-	fi
-
-	# Install go
-	echo "Installing go" >> /tmp/minio.log
-	cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log
-	/usr/local/go/bin/go version >> /tmp/minio.log
-	cd ~
-
-	# Install modified minio
-	echo "Installing previous minio" >> /tmp/minio.log
-	sudo apt-get install git -y >> /tmp/minio.log
-	cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
-	CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
-	cd ~
-else
-	echo "Not reconfigured in cluster expansion" >> /tmp/minio.log
-fi
 
 # Run minio
 echo "Running minio" >> /tmp/minio.log
