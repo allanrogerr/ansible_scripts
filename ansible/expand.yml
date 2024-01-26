@@ -1,0 +1,7 @@
+- hosts: webservers
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: pre-hook
+    - role: expand
+    #- role: post-hook
