@@ -25,17 +25,17 @@ fi
 
 # Install go
 echo "Installing go" >> /tmp/minio.log
-cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz
-/usr/local/go/bin/go version
+cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log
+/usr/local/go/bin/go version >> /tmp/minio.log
 
 # Install modified minio
 echo "Installing previous minio" >> /tmp/minio.log
 
-cd ~ && rm -rf *RELEASE* && wget https://github.com/minio/minio/archive/refs/tags/RELEASE.{{ release_tag }}.tar.gz
-tar -xzvf RELEASE.{{ release_tag }}.tar.gz
-sudo apt-get install git -y
+cd ~ && rm -rf *RELEASE* && wget https://github.com/minio/minio/archive/refs/tags/RELEASE.{{ release_tag }}.tar.gz >> /tmp/minio.log
+tar -xzvf RELEASE.{{ release_tag }}.tar.gz >> /tmp/minio.log
+sudo apt-get install git -y >> /tmp/minio.log
 cd ~/minio-RELEASE.{{ release_tag }}/
-CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio
+CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
 
 # Run minio
 echo "Running minio" >> /tmp/minio.log
