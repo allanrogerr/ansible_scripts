@@ -2,7 +2,7 @@
 
 echo "Begin" > /tmp/minio.log
 echo "Killing minio" >> /tmp/minio.log
-sudo kill "$(ps aux | grep -v grep | grep "minio" | awk '{print $2}')"
+sudo kill "$(ps aux | grep -v grep | grep "minio" | awk '{print $2}')" >> /tmp/minio.log
 sudo rm -rf /tmp/data*
 mkdir -p /tmp/data0 && mkdir -p /tmp/data1 && mkdir -p /tmp/data2 && mkdir -p /tmp/data3
 sudo rm -rf ~/.minio/*
