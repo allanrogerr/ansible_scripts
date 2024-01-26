@@ -10,6 +10,9 @@ done
 # Reconfigure expansion candidates only
 if [[ "HOSTSHORT" = "{{ expansion_prefix_1 }}"* || "HOSTSHORT" = "{{ expansion_prefix_2 }}"* ]]
 then
+	sudo rm -rf /tmp/data*
+  sudo rm -rf ~/.minio/*
+
 	sudo rm -rf /run/user/1000/export/data*
 	mkdir -p /run/user/1000/export/data0 && mkdir -p /run/user/1000/export/data1 && mkdir -p /run/user/1000/export/data2 && mkdir -p /run/user/1000/export/data3
 	sudo rm -rf ~/.minio/*

@@ -7,6 +7,10 @@ do
 	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
 	echo "Killed ${pid}" >> /tmp/minio.log
 done
+
+sudo rm -rf /tmp/data*
+sudo rm -rf ~/.minio/*
+
 sudo rm -rf /run/user/1000/export/data*
 mkdir -p /run/user/1000/export/data0 && mkdir -p /run/user/1000/export/data1 && mkdir -p /run/user/1000/export/data2 && mkdir -p /run/user/1000/export/data3
 sudo rm -rf ~/.minio/*
