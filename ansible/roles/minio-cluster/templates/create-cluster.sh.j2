@@ -36,14 +36,19 @@ CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp
 
 # Run minio
 echo "Running minio" >> /tmp/minio.log
-echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9090\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000\" \
+echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-.{{ host_domain }}:9090\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000\" \
       ./minio server \
-      {{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+      {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+      {{ schema }}://{{ host_prefix }}-1-{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+      {{ schema }}://{{ host_prefix }}-2-{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
       --address :9000 --console-address :9090" >> /tmp/minio.log
 # Cluster
-_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9090" MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9000" \
+_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}0.{{ host_domain }}:9090" \
+MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-.{{ host_domain }}:9000" \
 nohup ./minio server \
-{{ schema }}://{{ host_prefix }}{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
 --address :9000 --console-address :9090 >> /tmp/minio.log &
 --certs-dir $HOME/.minio/certs
 
