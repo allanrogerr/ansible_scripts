@@ -8,7 +8,7 @@ mkdir -p /tmp/data0 && mkdir -p /tmp/data1 && mkdir -p /tmp/data2 && mkdir -p /t
 sudo rm -rf ~/.minio/*
 
 # Reconfigure expansion candidates only
-if "HOSTSHORT"=~"{{ expansion_prefix_0 }}"
+if [[ "HOSTSHORT"=~"{{ expansion_prefix_0 }}" ]]
 then
 	echo "Installing certs" >> /tmp/minio.log
 	wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
