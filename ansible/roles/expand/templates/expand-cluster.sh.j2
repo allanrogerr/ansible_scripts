@@ -11,10 +11,7 @@ done
 if [[ "HOSTSHORT" = "{{ expansion_prefix_1 }}"* || "HOSTSHORT" = "{{ expansion_prefix_2 }}"* ]]
 then
 	sudo rm -rf /tmp/data*
-  sudo rm -rf ~/.minio/*
-
-	sudo rm -rf /run/user/1000/export/data*
-	mkdir -p /run/user/1000/export/data0 && mkdir -p /run/user/1000/export/data1 && mkdir -p /run/user/1000/export/data2 && mkdir -p /run/user/1000/export/data3
+	mkdir -p /tmp/data0 && mkdir -p /tmp/data1 && mkdir -p /tmp/data2 && mkdir -p /tmp/data3
 	sudo rm -rf ~/.minio/*
 
 	echo "Installing certs" >> /tmp/minio.log
@@ -53,17 +50,17 @@ fi
 echo "Running minio" >> /tmp/minio.log
 echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9090\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9000\" \
 github/minio/minio server \
-{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:9000/run/user/1000/export/data{0...3} \
-{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:9000/run/user/1000/export/data{0...3} \
-{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:9000/run/user/1000/export/data{0...3} \
+{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
 --address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs" >> /tmp/minio.log
 # Cluster
 _MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9090" \
 MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9000" \
 nohup github/minio/minio server \
-{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:9000/run/user/1000/export/data{0...3} \
-{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:9000/run/user/1000/export/data{0...3} \
-{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:9000/run/user/1000/export/data{0...3} \
+{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
+{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:9000/tmp/data{0...3} \
 --address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
 
 echo "Done" >> /tmp/minio.log
