@@ -54,7 +54,6 @@ github/minio/minio server \
 	MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:9000" \
 	nohup github/minio/minio server \
 	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:9000/tmp/data \
-	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:9000/tmp/data \
 	--address :9000 --console-address :9090 --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
 else
 	echo "Not included in cluster creation" >> /tmp/minio.log
