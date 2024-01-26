@@ -1,0 +1,44 @@
+---
+- name: Find existing files
+  become: true
+  shell: rm -rf *
+  tags: create
+
+- name: Copy script
+  template:
+    src: "create-cluster.sh.j2"
+    dest: "/home/{{ user }}/create-cluster.sh"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+  tags: create
+
+- name: Find files to modify
+  find:
+    paths: "/home/{{ user }}"
+    patterns: "*.sh"
+    recurse: no
+  register: repos
+  tags: create
+
+- name: Replace host
+  replace:
+    path: "{{ item.path }}"
+    regexp: 'HOSTNAME'
+    replace: '{{ inventory_hostname }}'
+  with_items: "{{ repos.files }}"
+  tags: create
+
+- name: Replace host short
+  replace:
+    path: "{{ item.path }}"
+    regexp: 'HOSTSHORT'
+    replace: '{{ inventory_hostname_short }}'
+  with_items: "{{ repos.files }}"
+  tags: create
+
+- name: Run install
+  become: true
+  become_user: "{{ user }}"
+  shell: ./create-cluster.sh
+  tags: create

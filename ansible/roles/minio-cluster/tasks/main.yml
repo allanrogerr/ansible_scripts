@@ -1,2 +1,3 @@
 ---
-- include: minio-cluster.yml
+- include: create-minio-cluster.yml
+- include: expand-minio-cluster.yml
