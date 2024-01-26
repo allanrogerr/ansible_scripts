@@ -1,9 +1,4 @@
 ---
-- name: Find existing files
-  become: true
-  shell: rm -rf *
-  tags: expand
-
 - name: Copy script
   template:
     src: "expand-cluster.sh.j2"
