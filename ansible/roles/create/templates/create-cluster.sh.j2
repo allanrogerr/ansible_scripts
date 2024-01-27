@@ -28,17 +28,21 @@ else
 	echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
 fi
 
-# Install go
-echo "Installing go" >> /tmp/minio.log
-cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log
-/usr/local/go/bin/go version >> /tmp/minio.log
-cd ~
+if [[ "configure" = *"{{ directive }}"* ]]
+then
+	# Install go
+	echo "Installing go" >> /tmp/minio.log
+	cd ~ && mkdir go && cd go && wget https://go.dev/dl/go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.13.linux-amd64.tar.gz >> /tmp/minio.log
+	/usr/local/go/bin/go version >> /tmp/minio.log
+	cd ~
 
-# Install modified minio
-echo "Installing previous minio" >> /tmp/minio.log
-sudo apt-get install git -y >> /tmp/minio.log
-cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
-CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
+	# Install modified minio
+	echo "Installing previous minio" >> /tmp/minio.log
+	sudo apt-get install git -y >> /tmp/minio.log
+	cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
+	CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
+	cd ~
+fi
 cd ~
 
 if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]

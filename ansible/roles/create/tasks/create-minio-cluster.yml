@@ -1,7 +1,7 @@
 ---
 - name: Find existing files
   become: true
-  shell: rm -rf *
+  shell: rm -rf *.sh
   tags: create
 
 - name: Copy script
