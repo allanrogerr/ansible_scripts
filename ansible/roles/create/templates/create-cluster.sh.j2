@@ -7,9 +7,9 @@ do
 	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
 	echo "Killed ${pid}" >> /tmp/minio.log
 done
-sudo rm -rf /tmp/data/*
+sudo rm -rf /tmp/data
 mkdir -p /tmp/data
-sudo rm -rf ~/.minio/*
+sudo rm -rf ~/.minio
 
 # Reconfigure expansion candidates only
 # echo "Installing certs" >> /tmp/minio.log
