@@ -6,6 +6,7 @@ for pid in $(ps aux | grep "minio" | grep -v grep | grep -v $$ | awk '{print $2}
 do
 	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
 	echo "Killed ${pid}" >> /tmp/minio.log
+	sleep 10
 done
 
 # Run minio
