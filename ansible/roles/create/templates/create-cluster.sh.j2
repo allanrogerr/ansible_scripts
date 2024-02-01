@@ -7,6 +7,7 @@ do
 	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
 	echo "Killed ${pid}" >> /tmp/minio.log
 done
+sudo rm -rf /tmp/minio.log
 sudo rm -rf /tmp/data
 mkdir -p /tmp/data
 sudo rm -rf ~/.minio
