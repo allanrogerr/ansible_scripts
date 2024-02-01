@@ -13,13 +13,13 @@ mkdir -p /tmp/data
 sudo rm -rf ~/.minio
 
 # Reconfigure expansion candidates only
-# echo "Installing certs" >> /tmp/minio.log
-# wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
-# chmod +x certgen-linux-amd64
-# ./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
-# mkdir -p $HOME/.minio/certs/CAs
-# cp public.crt $HOME/.minio/certs
-# cp private.key $HOME/.minio/certs
+echo "Installing certs" >> /tmp/minio.log
+wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
+chmod +x certgen-linux-amd64
+./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
+mkdir -p $HOME/.minio/certs/CAs
+cp public.crt $HOME/.minio/certs
+cp private.key $HOME/.minio/certs
 
 # Add entry to hosts
 if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
@@ -48,15 +48,14 @@ then
 	echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
 github/minio/minio server \
 {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
---address :{{ api_port }} --console-address :{{ console_port }}" >> /tmp/minio.log
+--address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs" >> /tmp/minio.log
 	# Cluster
 	_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
 	MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}" \
 	nohup github/minio/minio server \
 	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
-	--address :{{ api_port }} --console-address :{{ console_port }} \
+	--address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs \
 	>> /tmp/minio.log &
-# --certs-dir $HOME/.minio/certs
 else
 	echo "Not included in cluster creation" >> /tmp/minio.log
 fi
