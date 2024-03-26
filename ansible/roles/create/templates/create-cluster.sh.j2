@@ -7,7 +7,6 @@ do
 	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
 	echo "Killed ${pid}" >> /tmp/minio.log
 done
-sudo rm -rf /tmp/minio.log
 sudo rm -rf /tmp/data
 mkdir -p /tmp/data
 sudo rm -rf ~/.minio
@@ -31,12 +30,22 @@ fi
 
 if [[ "configure" = *"{{ directive }}"* ]]
 then
-	# Install minio
+	# Install go
+	echo "Installing go" >> /tmp/minio.log
+	rm -rf go*
+	cd ~ && mkdir -p go && cd go && wget https://go.dev/dl/go1.21.8.linux-amd64.tar.gz >> /tmp/minio.log && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.21.8.linux-amd64.tar.gz >> /tmp/minio.log
+	/usr/local/go/bin/go version >> /tmp/minio.log
+	cd ~
+
+	# Install modified minio
 	echo "Installing previous minio" >> /tmp/minio.log
 	sudo apt-get install git -y >> /tmp/minio.log
-	cd $HOME && mkdir -p github/minio && cd github/minio
-	wget https://dl.min.io/server/minio/release/linux-amd64/minio
-  chmod +x minio
+	rm -rf ~/github
+	rm -rf ~/minio
+	cd $HOME && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
+  CGO_ENABLED=0 /usr/local/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
+#  wget https://dl.min.io/server/minio/release/linux-amd64/minio
+#  chmod +x minio
 	cd ~
 fi
 cd ~
@@ -48,14 +57,15 @@ then
 	echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
 github/minio/minio server \
 {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
---address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs" >> /tmp/minio.log
+--address :{{ api_port }} --console-address :{{ console_port }}" >> /tmp/minio.log
 	# Cluster
 	_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
 	MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}" \
 	nohup github/minio/minio server \
 	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
-	--address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs \
+	--address :{{ api_port }} --console-address :{{ console_port }} \
 	>> /tmp/minio.log &
+# --certs-dir $HOME/.minio/certs
 else
 	echo "Not included in cluster creation" >> /tmp/minio.log
 fi
