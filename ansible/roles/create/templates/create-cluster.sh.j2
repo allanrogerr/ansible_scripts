@@ -21,12 +21,12 @@ cp public.crt $HOME/.minio/certs
 cp private.key $HOME/.minio/certs
 
 # Add entry to hosts
-if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
-then
-	echo "/etc/hosts already setup" >> /tmp/minio.log
-else
-	echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
-fi
+#if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
+#then
+#	echo "/etc/hosts already setup" >> /tmp/minio.log
+#else
+#	echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
+#fi
 
 if [[ "configure" = *"{{ directive }}"* ]]
 then
@@ -54,16 +54,17 @@ if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]
 then
 	# Run minio
 	echo "Running minio" >> /tmp/minio.log
-	echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
+	echo "_MINIO_REVERSE_PROXY=1 _MINIO_SERVER_LOCAL=HOSTNAME:{{ api_port }} MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
 github/minio/minio server \
 {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
---address :{{ api_port }} --console-address :{{ console_port }}" >> /tmp/minio.log
+--address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs" >> /tmp/minio.log
 	# Cluster
-	_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
+	_MINIO_REVERSE_PROXY=1 _MINIO_SERVER_LOCAL=HOSTNAME:{{ api_port }} MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
 	MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}" \
 	nohup github/minio/minio server \
 	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
 	--address :{{ api_port }} --console-address :{{ console_port }} \
+	--certs-dir $HOME/.minio/certs \
 	>> /tmp/minio.log &
 # --certs-dir $HOME/.minio/certs
 else
