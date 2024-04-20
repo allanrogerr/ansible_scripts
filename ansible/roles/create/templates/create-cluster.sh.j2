@@ -14,7 +14,7 @@ sudo rm -rf ~/.minio
 
 # Reconfigure expansion candidates only
 echo "Installing certs" >> /tmp/minio.log
-wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
+rm -rf certgen-linux-amd64* && wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
 chmod +x certgen-linux-amd64
 ./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
 mkdir -p $HOME/.minio/certs/CAs
@@ -34,7 +34,7 @@ then
 	# Install minio
 	echo "Installing previous minio" >> /tmp/minio.log
 	sudo apt-get install git -y >> /tmp/minio.log
-	cd $HOME && mkdir -p github/minio && cd github/minio
+	cd $HOME && rm -rf ~/github/minio && mkdir -p ~/github/minio && cd ~/github/minio
 	wget https://dl.min.io/server/minio/release/linux-amd64/minio
   chmod +x minio
 	cd ~
