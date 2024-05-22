@@ -11,19 +11,21 @@ done
 
 # Run minio
 echo "Running minio" >> /tmp/minio.log
-echo "_MINIO_DISABLE_API_FREEZE_ON_BOOT=true _MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
+echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
 github/minio/minio server \
 {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
 {{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
 {{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
---address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs" >> /tmp/minio.log
+--address :{{ api_port }} --console-address :{{ console_port }}" "$HAVE_CERTS" >> /tmp/minio.log
+
 # Cluster
-_MINIO_DISABLE_API_FREEZE_ON_BOOT=true _MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
+_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
 MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}" \
 nohup github/minio/minio server \
-{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
-{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
-{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
---address :{{ api_port }} --console-address :{{ console_port }} --certs-dir $HOME/.minio/certs >> /tmp/minio.log &
+	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
+	{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_1-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
+	{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_2-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
+	--address :{{ api_port }} --console-address :{{ console_port }} $HAVE_CERTS \
+	>> /tmp/minio.log &
 
 echo "Done" >> /tmp/minio.log

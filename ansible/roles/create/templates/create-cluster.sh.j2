@@ -36,12 +36,39 @@ fi
 
 if [[ "configure" = *"{{ directive }}"* ]]
 then
-	# Install minio
+	rm -rf ~/github
+  rm -rf ~/minio
+
+	# Install go
+	echo "Installing go with patch" >> /tmp/minio.log
+	rm -rf go*
+	sudo apt-get install git -y >> /tmp/minio.log
+
+	cd ~
+  wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
+  mkdir ~/go1.22.3 && sudo tar -C ~/go1.22.3 -xzf go1.22.3.linux-amd64.tar.gz
+  export GOROOT_BOOTSTRAP=~/go1.22.3/go
+
+	cd ~ && mkdir github && cd github && git clone https://github.com/golang/go.git && cd go && git checkout go1.22.3
+	wget "https://go-review.googlesource.com/changes/go~564197/revisions/1/patch?download" -O ~/github/go/patch.base64
+	base64 --decode patch.base64 > patch.diff
+  git apply patch.diff
+	cd ~/github/go/src && ./make.bash
+	export PATH=$PATH:/home/ubuntu/github/go/bin
+	go version >> /tmp/minio.log
+	cd ~
+
+	# Install modified minio
 	echo "Installing previous minio" >> /tmp/minio.log
+	cd ~ && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
+	CGO_ENABLED=0 go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
+else
+	# Install minio
+	echo "Installing latest minio release" >> /tmp/minio.log
 	sudo apt-get install git -y >> /tmp/minio.log
 	cd ~ && rm -rf ~/github/minio && mkdir -p ~/github/minio && cd ~/github/minio
 	wget https://dl.min.io/server/minio/release/linux-amd64/minio
-  chmod +x minio
+	chmod +x minio
 	cd ~
 fi
 cd ~
