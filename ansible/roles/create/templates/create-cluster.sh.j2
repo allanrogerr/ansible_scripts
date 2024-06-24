@@ -1,0 +1,63 @@
+#!/bin/bash
+
+echo "Begin" > /tmp/minio.log
+echo "Killing minio" >> /tmp/minio.log
+sudo systemctl stop minio.service 2>&1 >> /tmp/minio.log
+for pid in $(ps aux | grep "minio" | grep -v grep | grep -v $$ | awk '{print $2}')
+do
+  sudo kill "${pid}" 2>&1 >> /tmp/minio.log
+  echo "Killed ${pid}" >> /tmp/minio.log
+done
+sudo rm -rf /tmp/minio.log
+sudo rm -rf /tmp/data
+mkdir -p /tmp/data
+sudo rm -rf ~/.minio
+
+# Reconfigure expansion candidates only
+HAVE_CERTS=
+if [[ "https" = "{{ schema }}" ]]
+then
+  HAVE_CERTS="--certs-dir ~/.minio/certs"
+  echo "Installing certs" >> /tmp/minio.log
+  rm -rf certgen-linux-amd64* && wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
+  chmod +x certgen-linux-amd64
+  ./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
+  mkdir -p ~/.minio/certs/CAs
+  cp public.crt ~/.minio/certs
+  cp private.key ~/.minio/certs
+fi
+
+# Add entry to hosts
+if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
+then
+  echo "/etc/hosts already setup" >> /tmp/minio.log
+else
+  echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
+fi
+
+# Install minio
+echo "Installing latest minio release" >> /tmp/minio.log
+sudo apt-get install git -y >> /tmp/minio.log
+cd ~ && rm -rf ~/github/minio && mkdir -p ~/github/minio && cd ~/github/minio
+wget https://dl.min.io/server/minio/release/linux-amd64/minio -O minio
+chmod +x minio
+sudo mv minio /usr/local/bin/minio
+cd ~
+
+# Install service
+sudo vi /etc/systemd/system/minio.service
+
+if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]
+then
+  # Run minio
+  echo "Running minio" >> /tmp/minio.log
+
+  # Cluster
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now minio.service
+  sudo systemctl start minio.service >> /tmp/minio.log 2>&1
+  sudo systemctl status lxmin-allan.service
+else
+  echo "Not included in cluster creation" >> /tmp/minio.log
+fi
+echo "Done" >> /tmp/minio.log
