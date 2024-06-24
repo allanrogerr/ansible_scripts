@@ -56,7 +56,7 @@ then
   sudo systemctl daemon-reload
   sudo systemctl enable --now minio.service
   sudo systemctl start minio.service >> /tmp/minio.log 2>&1
-  sudo systemctl status lxmin-allan.service
+  sudo systemctl status minio.service
 else
   echo "Not included in cluster creation" >> /tmp/minio.log
 fi

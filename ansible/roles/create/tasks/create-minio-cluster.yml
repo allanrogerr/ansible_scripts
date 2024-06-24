@@ -66,8 +66,8 @@
 
 - name: Find files to modify - env
   find:
-    paths: "/etc/default/minio"
-    patterns: "minio.env"
+    paths: "/etc/default"
+    patterns: "minio"
     recurse: no
   register: env
   tags: minio-cluster
