@@ -37,16 +37,12 @@ fi
 
 # Install minio
 echo "Installing latest minio release" >> /tmp/minio.log
-sudo apt-get install git -y >> /tmp/minio.log
-cd ~ && rm -rf ~/github/minio && mkdir -p ~/github/minio && cd ~/github/minio
 wget https://dl.min.io/server/minio/release/linux-amd64/minio -O minio
 chmod +x minio
 sudo mv minio /usr/local/bin/minio
 cd ~
 
 # Install service
-sudo vi /etc/systemd/system/minio.service
-
 if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]
 then
   # Run minio
