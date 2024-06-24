@@ -16,7 +16,7 @@
 - name: Copy config
   template:
     src: "config.yml.j2"
-    dest: "/home/{{ user }}/config.yml"
+    dest: "/home/{{ user }}/.minio/config.yml"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: 0755
