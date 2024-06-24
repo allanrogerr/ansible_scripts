@@ -4,8 +4,8 @@ echo "Begin" > /tmp/minio.log
 echo "Killing minio" >> /tmp/minio.log
 for pid in $(ps aux | grep "minio" | grep -v grep | grep -v $$ | awk '{print $2}')
 do
-	sudo kill "${pid}" 2>&1 >> /tmp/minio.log
-	echo "Killed ${pid}" >> /tmp/minio.log
+  sudo kill "${pid}" 2>&1 >> /tmp/minio.log
+  echo "Killed ${pid}" >> /tmp/minio.log
 done
 sudo rm -rf /tmp/minio.log
 sudo rm -rf /tmp/data
@@ -16,81 +16,83 @@ sudo rm -rf ~/.minio
 HAVE_CERTS=
 if [[ "https" = "{{ schema }}" ]]
 then
-	HAVE_CERTS="--certs-dir ~/.minio/certs"
-	echo "Installing certs" >> /tmp/minio.log
-	rm -rf certgen-linux-amd64* && wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
-	chmod +x certgen-linux-amd64
-	./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
-	mkdir -p ~/.minio/certs/CAs
-	cp public.crt ~/.minio/certs
-	cp private.key ~/.minio/certs
+  HAVE_CERTS="--certs-dir ~/.minio/certs"
+  echo "Installing certs" >> /tmp/minio.log
+  rm -rf certgen-linux-amd64* && wget https://github.com/minio/certgen/releases/latest/download/certgen-linux-amd64
+  chmod +x certgen-linux-amd64
+  ./certgen-linux-amd64 -host "127.0.0.1,{{ host_list }}"
+  mkdir -p ~/.minio/certs/CAs
+  cp public.crt ~/.minio/certs
+  cp private.key ~/.minio/certs
 fi
 
 # Add entry to hosts
 if grep -q "127\.0\.0\.1 HOSTNAME" /etc/hosts;
 then
-	echo "/etc/hosts already setup" >> /tmp/minio.log
+  echo "/etc/hosts already setup" >> /tmp/minio.log
 else
-	echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
+  echo "127.0.0.1 HOSTNAME" | sudo tee -a /etc/hosts
 fi
 
 if [[ "configure" = *"{{ directive }}"* ]]
 then
-	rm -rf ~/github
+  rm -rf ~/github/minio
+  rm -rf ~/github/go
   rm -rf ~/minio
 
-	# Install go
-	echo "Installing go with patch" >> /tmp/minio.log
-	rm -rf go*
-	sudo apt-get install git -y >> /tmp/minio.log
+  # Install go
+  echo "Installing go with patch" >> /tmp/minio.log
+  rm -rf go*
+  sudo apt-get install git -y >> /tmp/minio.log
 
-	cd ~
+  cd ~
   wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
   mkdir ~/go1.22.3 && sudo tar -C ~/go1.22.3 -xzf go1.22.3.linux-amd64.tar.gz
   export GOROOT_BOOTSTRAP=~/go1.22.3/go
 
-	cd ~ && mkdir github && cd github && git clone https://github.com/golang/go.git && cd go && git checkout go1.22.3
-	wget "https://go-review.googlesource.com/changes/go~564197/revisions/1/patch?download" -O ~/github/go/patch.base64
-	base64 --decode patch.base64 > patch.diff
+  cd ~ && mkdir -p github && cd github && git clone https://github.com/golang/go.git >> /tmp/minio.log && cd go && git checkout go1.22.3
+  wget "https://go-review.googlesource.com/changes/go~564197/revisions/1/patch?download" -O ~/github/go/patch.base64
+  base64 --decode patch.base64 > patch.diff
   git apply patch.diff
-	cd ~/github/go/src && ./make.bash
-	export PATH=$PATH:/home/ubuntu/github/go/bin
-	go version >> /tmp/minio.log
-	cd ~
+  cd ~/github/go/src && ./make.bash
+  export PATH=$PATH:/home/ubuntu/github/go/bin
+  go version >> /tmp/minio.log
+  cd ~
 
-	# Install modified minio
-	echo "Installing previous minio" >> /tmp/minio.log
-	cd ~ && mkdir github && cd github && git clone {{ minio_repo }} && cd minio && git checkout {{ minio_branch }}
-	CGO_ENABLED=0 go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
+  # Install modified minio
+  echo "Installing previous minio" >> /tmp/minio.log
+  cd ~ && mkdir -p github && cd github && git clone {{ minio_repo }} >> /tmp/minio.log && cd minio && git checkout {{ minio_branch }}
+  echo "Compiling previous minio" >> /tmp/minio.log
+  CGO_ENABLED=0 /home/ubuntu/github/go/bin/go build -tags kqueue -trimpath -o minio >> /tmp/minio.log
 else
-	# Install minio
-	echo "Installing latest minio release" >> /tmp/minio.log
-	sudo apt-get install git -y >> /tmp/minio.log
-	cd ~ && rm -rf ~/github/minio && mkdir -p ~/github/minio && cd ~/github/minio
-	wget https://dl.min.io/server/minio/release/linux-amd64/minio
-	chmod +x minio
-	cd ~
+  # Install minio
+  echo "Installing latest minio release" >> /tmp/minio.log
+  sudo apt-get install git -y >> /tmp/minio.log
+  cd ~ && rm -rf ~/github/minio && mkdir -p ~/github/minio && cd ~/github/minio
+  wget https://dl.min.io/server/minio/release/linux-amd64/minio
+  chmod +x minio
+  cd ~
 fi
 cd ~
 
 if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]
 then
-	# Run minio
-	echo "Running minio" >> /tmp/minio.log
-	echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
-github/minio/minio server \
+  # Run minio
+  echo "Running minio" >> /tmp/minio.log
+  echo "_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}\" MINIO_SERVER_URL=\"{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}\" \
+~/github/minio/minio server \
 {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
 --address :{{ api_port }} --console-address :{{ console_port }}" "$HAVE_CERTS" >> /tmp/minio.log
 
-	# Cluster
-	_MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
-	MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}" \
-	nohup github/minio/minio server \
-	{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
-	--address :{{ api_port }} --console-address :{{ console_port }} $HAVE_CERTS \
-	>> /tmp/minio.log &
+  # Cluster
+  _MINIO_REVERSE_PROXY=1 MINIO_CI_CD=1 MINIO_BROWSER_REDIRECT_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ console_port }}" \
+  MINIO_SERVER_URL="{{ schema }}://{{ host_prefix }}-0-0.{{ host_domain }}:{{ api_port }}" \
+  nohup ~/github/minio/minio server \
+  {{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data \
+  --address :{{ api_port }} --console-address :{{ console_port }} $HAVE_CERTS \
+  >> /tmp/minio.log 2>&1 &
 else
-	echo "Not included in cluster creation" >> /tmp/minio.log
+  echo "Not included in cluster creation" >> /tmp/minio.log
 fi
 echo "Done" >> /tmp/minio.log
 
