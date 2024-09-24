@@ -1,2 +1,2 @@
 ---
-- include: create-minio-cluster.yml
+- include_tasks: create-minio-cluster.yml
