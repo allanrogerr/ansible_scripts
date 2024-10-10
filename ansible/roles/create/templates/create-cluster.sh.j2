@@ -9,8 +9,10 @@ do
   echo "Killed ${pid}" >> /tmp/minio.log
 done
 sudo rm -rf /tmp/minio.log
-sudo rm -rf /tmp/data
-mkdir -p /tmp/data
+sudo rm -rf /tmp/data{0..23}
+for i in $(seq 0 23); do
+	mkdir -p /tmp/data$i &
+done
 sudo rm -rf ~/.minio
 
 # Reconfigure expansion candidates only
