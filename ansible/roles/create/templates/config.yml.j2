@@ -5,8 +5,11 @@ rootPassword: "minio-secret-key-minioadmin"
 console-address: ":{{ console_port }}"
 pools: # Specify the nodes and drives with pools
   - args:
-      - "{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data{0...11}/minio"
+      - "{{ schema }}://{{ host_prefix }}-1-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data{0...27}/minio"
     set-drive-count: 16
   - args:
-      - "{{ schema }}://{{ host_prefix }}-0-{0...{{ host_count_0-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data{12...23}/minio"
+      - "{{ schema }}://{{ host_prefix }}-2-{0...{{ host_count_1-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data{0...27}/minio"
+    set-drive-count: 16
+  - args:
+      - "{{ schema }}://{{ host_prefix }}-3-{0...{{ host_count_2-1 }}}.{{ host_domain }}:{{ api_port }}/tmp/data{0...27}/minio"
     set-drive-count: 16

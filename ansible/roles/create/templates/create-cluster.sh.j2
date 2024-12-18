@@ -45,18 +45,14 @@ sudo mv minio /usr/local/bin/minio
 cd ~
 
 # Install service
-if [[ "HOSTSHORT" = "{{ expansion_prefix_0 }}"* ]]
-then
-  # Run minio
-  echo "Running minio" >> /tmp/minio.log
+# Run minio
+echo "Running minio" >> /tmp/minio.log
 
-  # Cluster
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now minio.service
-  sudo systemctl start minio.service >> /tmp/minio.log 2>&1
-  sudo systemctl status minio.service
-else
-  echo "Not included in cluster creation" >> /tmp/minio.log
-fi
+# Cluster
+sudo systemctl daemon-reload
+sudo systemctl enable --now minio.service
+sudo systemctl start minio.service >> /tmp/minio.log 2>&1
+sudo systemctl status minio.service
+
 echo "Done" >> /tmp/minio.log
 
